@@ -1,0 +1,9 @@
+bin/
+obj/
+publish/
+*.user
+*.db
+*.sqlite
+*.log
+appsettings.Development.json
+appsettings.json
