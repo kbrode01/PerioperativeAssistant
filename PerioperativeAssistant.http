@@ -1,0 +1,6 @@
+@PerioperativeAssistant_HostAddress = http://localhost:5084
+
+GET {{PerioperativeAssistant_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
