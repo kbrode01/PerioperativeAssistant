@@ -8,7 +8,7 @@ Built by Kevin Brodersen — Anesthesia Technician at Mayo Clinic.
 
 A production-grade C# / ASP.NET Core application designed to demonstrate how Azure cloud and AI services can support real perioperative operations. The project is inspired by my daily work using Epic Optime and Anesthesia modules in high-acuity surgical environments.
 
-## Key Features
+## Key Features / Goals
 
 - Surgical case creation, scheduling, and management
 - Anesthesia record documentation with validation
@@ -47,7 +47,7 @@ This project was built while studying for Microsoft Azure certifications (AZ-900
 
 - Deployed on Azure App Service
 - Database: Azure SQL
-- Live Demo: 
+- Live Demo: https://perioperative-assistant-gmf4edd3h5bwfcg6.westus3-01.azurewebsites.net/
 
 ## Future Enhancements
 
