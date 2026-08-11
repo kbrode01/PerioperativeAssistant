@@ -1,23 +1,25 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+﻿# Stage 1: Build the application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["PerioperativeAssistant.csproj", "./"]
-RUN dotnet restore "PerioperativeAssistant.csproj"
-COPY . .
-WORKDIR "/src/"
-RUN dotnet build "./PerioperativeAssistant.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./PerioperativeAssistant.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Copy csproj and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
 
-FROM base AS final
+# Copy the rest of the source code
+COPY . ./
+RUN dotnet publish -c Release -o /app/publish
+
+# Stage 2: Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+# Copy published output
+COPY --from=build /app/publish .
+
+# Expose port 8080 for Azure Container Apps
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+# Start the app
 ENTRYPOINT ["dotnet", "PerioperativeAssistant.dll"]
