@@ -27,12 +27,25 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
+          
+      - name: Enable Docker build cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ github.sha }}
+          restore-keys: |
+            buildx-
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/perioperativeassistant:${{ steps.vars.outputs.VERSION }} .
+          docker build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
+            -t ghcr.io/${{ github.actor }}/perioperativeassistant:${{ steps.vars.outputs.VERSION }} .
+          
           docker tag ghcr.io/${{ github.actor }}/perioperativeassistant:${{ steps.vars.outputs.VERSION }} \
                      ghcr.io/${{ github.actor }}/perioperativeassistant:latest
+
 
       - name: Push Docker image
         run: |
