@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PerioperativeAssistant.Data;
-using PerioperativeAssistant.Models;
-using PerioperativeAssistant.DTOs;
 using Microsoft.EntityFrameworkCore;
+using PerioperativeAssistant.Data;
+using PerioperativeAssistant.DTOs;
+using PerioperativeAssistant.Models;
 
 namespace PerioperativeAssistant.Controllers
 {
@@ -22,7 +22,7 @@ namespace PerioperativeAssistant.Controllers
         public async Task<ActionResult<IEnumerable<SurgicalCase>>> GetCases()
         {
             return await _context.SurgicalCases
-                .OrderByDescending(c => c.SurgeryDate)
+                .OrderBy(c => c.ScheduledStart)
                 .ToListAsync();
         }
 
@@ -30,7 +30,8 @@ namespace PerioperativeAssistant.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SurgicalCase>> GetCase(int id)
         {
-            var surgicalCase = await _context.SurgicalCases.FindAsync(id);
+            var surgicalCase = await _context.SurgicalCases
+                .FirstOrDefaultAsync(c => c.Id == id);
 
             if (surgicalCase == null)
             {
@@ -47,23 +48,26 @@ namespace PerioperativeAssistant.Controllers
             var surgicalCase = new SurgicalCase
             {
                 CaseNumber = dto.CaseNumber,
-                PatientId = dto.PatientId,
-                SurgeonName = dto.SurgeonName,
-                AnesthesiologistName = dto.AnesthesiologistName,
-                CrnaName = dto.CrnaName,
-                AnesTechName = dto.AnesTechName,
-                SurgeryDate = dto.SurgeryDate,
+                Location = dto.Location,
+                Service = dto.Service,
                 ProcedureType = dto.ProcedureType,
+                ProcedureCode = dto.ProcedureCode,
+                ProcedureCodeSystem = dto.ProcedureCodeSystem,
+                ScheduledStart = dto.ScheduledStart,
+                ScheduledDurationMinutes = dto.ScheduledDurationMinutes,
                 AnesthesiaType = dto.AnesthesiaType,
                 Status = dto.Status ?? "Scheduled",
-                Notes = dto.Notes
+                Notes = dto.Notes,
+                IsSynthetic = dto.IsSynthetic
             };
 
             _context.SurgicalCases.Add(surgicalCase);
-            await _context.SaveChangesAsync();   // This generates the ID
+            await _context.SaveChangesAsync();
 
-            // Now Id should be populated
-            return CreatedAtAction(nameof(GetCase), new { id = surgicalCase.Id }, surgicalCase);
+            return CreatedAtAction(
+                nameof(GetCase),
+                new { id = surgicalCase.Id },
+                surgicalCase);
         }
     }
 }

@@ -11,26 +11,35 @@ namespace PerioperativeAssistant.Models
         public string CaseNumber { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(20)]
-        public string PatientId { get; set; } = string.Empty;
+        [StringLength(30)]
+        public string Location { get; set; } = string.Empty;
 
+        [Required]
         [StringLength(100)]
-        public string SurgeonName { get; set; } = string.Empty;
+        public string Service { get; set; } = string.Empty;
 
-        [StringLength(100)]
-        public string AnesthesiologistName { get; set; } = string.Empty;
-
-        [StringLength(100)]
-        public string CrnaName { get; set; } = string.Empty;
-
-        [StringLength(100)]
-        public string AnesTechName { get; set; } = string.Empty;
-
-        public DateTime SurgeryDate { get; set; }
-
+        [Required]
         [StringLength(150)]
         public string ProcedureType { get; set; } = string.Empty;
 
+        [StringLength(100)]
+        public string ProcedureCode { get; set; } = string.Empty;
+
+        [StringLength(200)]
+        public string ProcedureCodeSystem { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime ScheduledStart { get; set; }
+
+        public int ScheduledDurationMinutes { get; set; }
+
+        public DateTime? ActualStart { get; set; }
+
+        public DateTime? ActualEnd { get; set; }
+
+        public int? ActualDurationMinutes { get; set; }
+
+        [Required]
         [StringLength(50)]
         public string AnesthesiaType { get; set; } = string.Empty;
 
@@ -40,6 +49,14 @@ namespace PerioperativeAssistant.Models
         [StringLength(500)]
         public string Notes { get; set; } = string.Empty;
 
+        public bool IsSynthetic { get; set; } = true;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public ICollection<ResourcePrediction> ResourcePredictions { get; set; }
+            = new List<ResourcePrediction>();
+
+        public ICollection<ResourceUseEvent> ResourceUseEvents { get; set; }
+            = new List<ResourceUseEvent>();
     }
 }

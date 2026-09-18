@@ -30,3 +30,4 @@ docker-compose*
 .env
 appsettings.Development.json
 appsettings.Local.json
+appsettings.json

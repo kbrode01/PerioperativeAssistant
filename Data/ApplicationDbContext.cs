@@ -10,55 +10,125 @@ namespace PerioperativeAssistant.Data
         {
         }
 
-        // This represents the table in the database
+        // =====================================================
+        // Database Tables
+        // =====================================================
+
         public DbSet<SurgicalCase> SurgicalCases { get; set; }
+        public DbSet<ResourceType> ResourceTypes { get; set; }
+        public DbSet<ResourcePrediction> ResourcePredictions { get; set; }
+        public DbSet<ResourceUseEvent> ResourceUseEvents { get; set; }
+        public DbSet<ResourceInventory> ResourceInventories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Optional: Configure table name and properties
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.CaseNumber)
-                .HasMaxLength(50)
-                .IsRequired();
+            // =================================================
+            // SurgicalCase
+            // =================================================
 
             modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.PatientId)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasIndex(c => c.CaseNumber)
+                .IsUnique();
 
             modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.SurgeonName)
-                .HasMaxLength(100);
+                .HasIndex(c => c.ScheduledStart);
 
             modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.AnesthesiologistName)
-                .HasMaxLength(100);
+                .HasIndex(c => c.Location);
 
             modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.CrnaName)
-                .HasMaxLength(100);
+                .HasIndex(c => c.Service);
 
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.AnesTechName)
-                .HasMaxLength(100);
+            // =================================================
+            // ResourceType
+            // =================================================
 
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.ProcedureType)
-                .HasMaxLength(150);
+            modelBuilder.Entity<ResourceType>()
+                .HasIndex(r => new
+                {
+                    r.Name,
+                    r.Variant
+                })
+                .IsUnique();
 
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.AnesthesiaType)
-                .HasMaxLength(50);
+            // =================================================
+            // ResourcePrediction
+            // =================================================
 
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.Status)
-                .HasMaxLength(20);
+            modelBuilder.Entity<ResourcePrediction>()
+                .HasOne(rp => rp.SurgicalCase)
+                .WithMany(sc => sc.ResourcePredictions)
+                .HasForeignKey(rp => rp.SurgicalCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<SurgicalCase>()
-                .Property(c => c.Notes)
-                .HasMaxLength(500);
+            modelBuilder.Entity<ResourcePrediction>()
+                .HasOne(rp => rp.ResourceType)
+                .WithMany(rt => rt.ResourcePredictions)
+                .HasForeignKey(rp => rp.ResourceTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResourcePrediction>()
+                .HasIndex(rp => rp.PredictedUseTime);
+
+            modelBuilder.Entity<ResourcePrediction>()
+                .HasIndex(rp => new
+                {
+                    rp.ResourceTypeId,
+                    rp.PredictedUseTime
+                });
+
+            // =================================================
+            // ResourceUseEvent
+            // =================================================
+
+            modelBuilder.Entity<ResourceUseEvent>()
+                .HasOne(rue => rue.SurgicalCase)
+                .WithMany(sc => sc.ResourceUseEvents)
+                .HasForeignKey(rue => rue.SurgicalCaseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ResourceUseEvent>()
+                .HasOne(rue => rue.ResourceType)
+                .WithMany(rt => rt.ResourceUseEvents)
+                .HasForeignKey(rue => rue.ResourceTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResourceUseEvent>()
+                .HasIndex(rue => rue.UsedAt);
+
+            modelBuilder.Entity<ResourceUseEvent>()
+                .HasIndex(rue => new
+                {
+                    rue.ResourceTypeId,
+                    rue.UsedAt
+                });
+
+            modelBuilder.Entity<ResourceUseEvent>()
+                .HasIndex(rue => new
+                {
+                    rue.ResourceTypeId,
+                    rue.AvailableAgainAt
+                });
+
+            // =================================================
+            // ResourceInventory
+            // =================================================
+
+            modelBuilder.Entity<ResourceInventory>()
+                .HasOne(ri => ri.ResourceType)
+                .WithMany(rt => rt.ResourceInventories)
+                .HasForeignKey(ri => ri.ResourceTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ResourceInventory>()
+                .HasIndex(ri => new
+                {
+                    ri.ResourceTypeId,
+                    ri.Location
+                })
+                .IsUnique();
         }
     }
 }
