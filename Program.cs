@@ -19,7 +19,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         }));
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("openapi", new()
+    {
+        Title = "Perioperative Assistant",
+        Description = "API for perioperative resource forecasting and operational planning."
+    });
+});
 
 var app = builder.Build();
 
@@ -27,7 +34,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment()|| app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwaggerUI(options =>
+	{
+		options.SwaggerEndpoint(
+			"/swagger/openapi/swagger.json",
+			"Perioperative Assistant");
+	});
 }
 
 app.UseHttpsRedirection();
