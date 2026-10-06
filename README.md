@@ -6,6 +6,8 @@ The project is built around a practical operating-room problem: reusable clinica
 
 The initial use case focuses on forecasting daily demand and availability for reusable GlideScope blades. The underlying domain model is intentionally equipment-neutral so the same architecture can later support other perioperative resources.
 
+![Perioperative Assistant architecture and forecasting workflow](docs/PAOutline.png)
+
 > **Project status:** Active development. Cloud infrastructure, CI/CD, the core API, Azure SQL persistence, and the resource-forecasting domain model are operational. Current development is focused on daily surgical-schedule ingestion and the forecasting pipeline.
 
 ## Current Goal
