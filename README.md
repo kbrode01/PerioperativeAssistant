@@ -200,47 +200,60 @@ PerioperativeAssistant/
 
 The project structure will expand as ingestion, forecasting services, automated testing, and resource simulation are implemented.
 
-## Development Status
+## Project Status
+
+Perioperative Assistant is under active development. The current implementation
+includes the cloud application foundation, equipment-neutral resource domain
+model, synthetic surgical schedule generation, and end-to-end schedule ingestion.
 
 ### Completed
 
 - .NET 8 Web API
 - Azure Container Apps deployment
-- Azure SQL integration
-- Entity Framework Core migrations
+- Azure SQL persistence with Entity Framework Core
 - Docker containerization
-- GitHub Container Registry integration
 - GitHub Actions CI/CD
-- automated Azure Container Apps revision deployment
-- Swagger / OpenAPI documentation
-- patient-minimal `SurgicalCase` model
-- equipment-neutral resource domain model
-- resource inventory model
-- resource-use and reprocessing lifecycle model
-- resource prediction model
-- synthetic daily surgical-schedule generator
-- scheduled-versus-actual synthetic case simulation
+- Swagger/OpenAPI documentation
+- Equipment-neutral perioperative resource domain model
+- PHI-minimal surgical case model
+- Synthetic daily surgical schedule generator
+- Source-independent schedule ingestion contract
+- CSV adapter for synthetic schedule data
+- Multipart CSV schedule upload endpoint
+- Idempotent schedule import/update behavior
+- End-to-end ingestion of an 86-case synthetic surgical day into Azure SQL
+- Separation of morning-known schedule data from simulated future outcomes
 
 ### Current Development
 
-**Daily surgical-schedule ingestion**
+The current phase focuses on resource-demand simulation and forecasting.
 
-The next application layer will accept a daily surgical schedule through a defined ingestion boundary, validate and normalize incoming cases, and persist them into the operational model.
+The initial resource use case is reusable GlideScope Size 3 and Size 4 blades.
+The application will use the morning surgical schedule to estimate:
 
-The synthetic data source is intentionally being treated as an external system so that source-specific adapters can later be replaced without changing the forecasting domain.
+- Expected total Size 3 blade usage for the day
+- Expected total Size 4 blade usage for the day
+- Time-dependent blade demand
+- Projected depletion of morning clean inventory
+- When additional clean blades will be required
+- Recommended reserve capacity for unplanned or emergent demand
+
+The MVP does not attempt to predict instrument reprocessing turnaround time.
+Instead, it forecasts when clean inventory will be needed, providing an
+operational target for instrument processing.
 
 ### Next Milestones
 
-1. Implement daily surgical-schedule ingestion
-2. Add schedule update/upsert handling
-3. Generate synthetic resource-use events
-4. Model GlideScope Size 3 and Size 4 demand
-5. Model variable reprocessing turnaround
-6. Combine predicted demand, inventory, and expected resource returns
-7. Calculate reserve and shortage risk throughout the surgical day
-8. Compare predictions with simulated actual outcomes
-9. Add automated unit and integration tests
-10. Build an operational dashboard
+1. Model synthetic GlideScope Size 3 and Size 4 utilization
+2. Generate ground-truth resource-use events for synthetic surgical cases
+3. Build baseline scheduled-demand forecasting
+4. Calculate total expected daily blade demand
+5. Model cumulative demand throughout the surgical day
+6. Compare projected demand against morning clean inventory
+7. Identify inventory-risk windows and replenishment requirements
+8. Add an explicit reserve for unplanned/emergent airway demand
+9. Evaluate forecast accuracy against synthetic ground truth
+10. Expand the forecasting architecture to additional perioperative resources
 
 ## Future Development
 

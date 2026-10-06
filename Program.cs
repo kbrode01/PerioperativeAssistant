@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using PerioperativeAssistant.Data;
 using PerioperativeAssistant.Services;
+using PerioperativeAssistant.Ingestion.Synthetic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 errorNumbersToAdd: null);
         }));
 builder.Services.AddScoped<SurgicalScheduleIngestionService>();
+builder.Services.AddScoped<SyntheticScheduleCsvAdapter>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
